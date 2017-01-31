@@ -219,9 +219,7 @@ class LEDMatrixTicker(object):
             counter +=1
 
             msg = remainder + msg
-            print("m", msg)
             remainder = self.scroll_string(msg, delay)
-            print("r", remainder)
 
         if finish:
             self.clear_all()
@@ -236,7 +234,6 @@ class LEDMatrixTicker(object):
                     try:
                         new_char = message[matrix + c + 1]
                     except IndexError:
-                        print(message[-self.width:])
                         return message[-self.width:]
 
                     self.send_matrix_shifted_letter(matrix, old_char, new_char, stage, direction=direction)
