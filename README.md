@@ -12,6 +12,8 @@ Step aken from https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tut
 7. Select `yes` when it asks to reboot.  
 
 ## Pin Layout
+[Pin Layout Diagrams](https://pinout.xyz)
+
 | Board Pin | Name | RPi Pin | RPi Function      |
 |-----------|------|---------|-------------------|
 | 1         | VCC  | 2       | 5V                |
@@ -19,6 +21,8 @@ Step aken from https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tut
 | 3         | DIN  | 19      | GPIO 10 (MOSI)    |
 | 4         | CS   | 24      | GPIO 8 (SPI CS0)  |
 | 5         | CLK  | 23      | GPIO 11 (SPI CLK) |
+
+
 
 ## Acknowlegements
 I used a lot of code (especially the low-level technical parts) from [tutRPi's multilinemAX7219 repo](https://github.com/tutRPi/multilineMAX7219).  
