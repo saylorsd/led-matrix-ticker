@@ -25,6 +25,7 @@ MAX7219_REG_SCANLIMIT = 0xB
 MAX7219_REG_SHUTDOWN = 0xC
 MAX7219_REG_DISPLAYTEST = 0xF
 
+
 # Scroll & wipe directions, for use as arguments to various library functions
 # For ease of use, import the following constants into the main script
 DIR_U = 1  # Up
@@ -67,6 +68,10 @@ class LEDMatrixTicker(object):
         # Open SPI bus#0 using CS0 (CE0)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
+        self.send_all_reg_byte(MAX7219_REG_SCANLIMIT, 7)    # show all 8 digits
+        self.send_all_reg_byte(MAX7219_REG_DECODEMODE, 0)   # using a LED matrix (not digits)
+        self.send_all_reg_byte(MAX7219_REG_DISPLAYTEST, 0)  # no display test
+        self.send_all_reg_byte(MAX7219_REG_SHUTDOWN, 1)     # not in shutdown mode (i.e start it up)
 
         self.set_brightness(brightness)
 
@@ -212,10 +217,12 @@ class LEDMatrixTicker(object):
             if not counter:
                 msg = " " * self.width + message + split_str
             # Last run is end padded
-            elif counter == (repeats - 1):
-                msg = message + " " * self.width
             else:
-                msg = message + split_str
+                msg = message
+            if counter == (repeats - 1):
+                msg = msg + " " * self.width
+            else:
+                msg = msg + split_str
             counter +=1
 
             msg = remainder + msg
