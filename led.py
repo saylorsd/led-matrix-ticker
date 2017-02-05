@@ -1,5 +1,6 @@
 import spidev
 import time
+import redis
 from random import randrange
 
 from fonts import CP437_FONT, SINCLAIRS_FONT, LCD_FONT, TINY_FONT, \
@@ -24,7 +25,6 @@ MAX7219_REG_INTENSITY = 0xA
 MAX7219_REG_SCANLIMIT = 0xB
 MAX7219_REG_SHUTDOWN = 0xC
 MAX7219_REG_DISPLAYTEST = 0xF
-
 
 # Scroll & wipe directions, for use as arguments to various library functions
 # For ease of use, import the following constants into the main script
@@ -68,10 +68,10 @@ class LEDMatrixTicker(object):
         # Open SPI bus#0 using CS0 (CE0)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
-        self.send_all_reg_byte(MAX7219_REG_SCANLIMIT, 7)    # show all 8 digits
-        self.send_all_reg_byte(MAX7219_REG_DECODEMODE, 0)   # using a LED matrix (not digits)
+        self.send_all_reg_byte(MAX7219_REG_SCANLIMIT, 7)  # show all 8 digits
+        self.send_all_reg_byte(MAX7219_REG_DECODEMODE, 0)  # using a LED matrix (not digits)
         self.send_all_reg_byte(MAX7219_REG_DISPLAYTEST, 0)  # no display test
-        self.send_all_reg_byte(MAX7219_REG_SHUTDOWN, 1)     # not in shutdown mode (i.e start it up)
+        self.send_all_reg_byte(MAX7219_REG_SHUTDOWN, 1)  # not in shutdown mode (i.e start it up)
 
         self.set_brightness(brightness)
 
@@ -192,7 +192,8 @@ class LEDMatrixTicker(object):
 
                 self.send_matrix_reg_byte(matrix, col + 1, show_char[col])
 
-    def scroll_message(self, message, repeats=0, speed=3, split_str=" ", direction=DIR_L, font=DEFAULT_FONT, finish=True):
+    def scroll_message(self, message, repeats=0, speed=3, split_str=" ", direction=DIR_L, font=DEFAULT_FONT,
+                       finish=True):
         """
         Scroll some text messages across the lines, for a specified number of times (repeats)
 
@@ -216,14 +217,14 @@ class LEDMatrixTicker(object):
             # First run is front padded
             if not counter:
                 msg = " " * self.width + message + split_str
-            # Last run is end padded
             else:
                 msg = message
+            # Last run is end padded
             if counter == (repeats - 1):
                 msg = msg + " " * self.width
             else:
                 msg = msg + split_str
-            counter +=1
+            counter += 1
 
             msg = remainder + msg
             remainder = self.scroll_string(msg, delay)
@@ -245,3 +246,40 @@ class LEDMatrixTicker(object):
 
                     self.send_matrix_shifted_letter(matrix, old_char, new_char, stage, direction=direction)
                 time.sleep(delay)
+
+    def scroll_redis_key(self, key, host='localhost', port=6379, db=0, repeats=0, speed=3, split_str=" ", direction=DIR_L,
+                             font=DEFAULT_FONT, finish=True):
+        """
+        Scroll some text messages across the lines, for a specified number of times (repeats)
+
+        :param key: redis key
+        :param port: redis port
+        :param message: string message to display
+        :param repeats: number of times to display - 0 for indefinite
+        :param speed: how fast the message scrolls - 0(slowest) to 9(fastest)
+        :param split_str: string to put between instances of message
+        :param direction: direction to scroll in
+        :param font:
+        :param finish: Clears matrices at end of repeats if True
+        """
+
+        delay = 0.5 ** speed
+        remainder = ""
+        msg = ""
+        first_run = True
+
+        r = redis.StrictRedis(host=host, port=port, db=db)
+
+        while True:
+            message = r.get(key)
+
+            # First run is front padded
+            if first_run:
+                msg = " " * self.width + message + split_str
+                first_run = False
+            else:
+                msg = message
+
+            msg = remainder + msg + split_str
+
+            remainder = self.scroll_string(msg, delay)
