@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import sys
 
 from led import LEDMatrixTicker as Ticker
@@ -13,13 +15,13 @@ if len(sys.argv) > 1:
         use_redis = True
 
 # Initialise the library and the MAX7219/8x8LED arrays
-ticker = Ticker(width=4, font=CP437_FONT_ROTATED, rotated=True)
+ticker = Ticker(width=8, font=CP437_FONT_ROTATED, rotated=True)
 
 try:
     if use_redis:
-        ticker.scroll_redis_key("ticker_msg", speed=6, repeats=0)
+        ticker.scroll_redis_key(speed=10, repeats=0)
     else:
-        ticker.scroll_message("Message", speed=6, repeats=0)
+        ticker.scroll_message("Message", speed=10, repeats=0)
 
 except KeyboardInterrupt:
     ticker.clear_all()

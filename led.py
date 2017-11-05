@@ -237,6 +237,7 @@ class LEDMatrixTicker(object):
 
         for c in range(len(message) - (len(matrices) - 1)):
             for stage in range(8):  # stage in the shift process
+                time.sleep(delay)
                 for matrix in matrices:
                     old_char = message[matrix + c]
                     try:
@@ -245,14 +246,14 @@ class LEDMatrixTicker(object):
                         return message[-self.width:]
 
                     self.send_matrix_shifted_letter(matrix, old_char, new_char, stage, direction=direction)
-                time.sleep(delay)
+                
 
-    def scroll_redis_key(self, key, host='localhost', port=6379, db=0, repeats=0, speed=3, split_str=" ", direction=DIR_L,
+    def scroll_redis_key(self, priority_key='ticker_message_priority', continuous_key='ticker_message_continuous', host='localhost', port=6379, db=0, repeats=0, speed=3, split_str=" ", direction=DIR_L,
                              font=DEFAULT_FONT, finish=True):
         """
         Scroll some text messages across the lines, for a specified number of times (repeats)
 
-        :param key: redis key
+        :param chanel: redis channel
         :param port: redis port
         :param message: string message to display
         :param repeats: number of times to display - 0 for indefinite
@@ -269,17 +270,26 @@ class LEDMatrixTicker(object):
         first_run = True
 
         r = redis.StrictRedis(host=host, port=port, db=db)
-
+        DIAMOND = chr(0x04)
+        SPLIT = DIAMOND + " " 
+        
         while True:
-            message = r.get(key)
+            # get high priority message
+            message = r.rpop(priority_key)
+            
+            if not message:
+                message = r.get(continuous_key)
+            
+            if message:
+                message = SPLIT + message
+            
+            if message or (remainder and not remainder.isspace()):
+                # First run is front padded
+                if first_run:
+                    msg = " " * self.width + message + split_str
+                    first_run = False
+                else:
+                    msg = message if message else ""
 
-            # First run is front padded
-            if first_run:
-                msg = " " * self.width + message + split_str
-                first_run = False
-            else:
-                msg = message
-
-            msg = remainder + msg + split_str
-
-            remainder = self.scroll_string(msg, delay)
+                msg = remainder + msg + split_str
+                remainder = self.scroll_string(msg, delay)
