@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-spidev>=3.0
 redis
-=======
-requests
 spidev>=3.0
->>>>>>> 1ae03e1d9b1de60e5d13bc37cf2b0302cd2ce390
+
