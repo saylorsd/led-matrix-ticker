@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # LED Matrix Text Ticker
 
 ## Enable SPI
@@ -25,10 +24,11 @@ Step aken from https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tut
 
 
 
-## Acknowlegements
+## Acknowlegements  
+
 I used a lot of code (especially the low-level technical parts) from [tutRPi's multilinemAX7219 repo](https://github.com/tutRPi/multilineMAX7219).  
 Which is an "improved and extended version" of [JonA1961's MAX7219array]( https://github.com/JonA1961/MAX7219array).  
-=======
+
 # PATransitTicker
 Display upcoming Port Authority of Allegheny County bus/T times on a scrolling LED message board connected to a Raspberry Pi.
 
@@ -124,4 +124,3 @@ Then add a line like this:
 * [My LED Matrix Ticker Code](https://github.com/saylorsd/led-matrix-ticker)  
 * [TrueTime Documentation](http://realtime.portauthority.org/bustime/apidoc/v1/main.jsp?section=documentation.jsp) (must be logged into * [TrueTime account](http://realtime.portauthority.org/bustime/updateDeveloper.jsp))
 * [Western Pennsylvania Regional Data Center](https://www.wprdc.org)
->>>>>>> 1ae03e1d9b1de60e5d13bc37cf2b0302cd2ce390
