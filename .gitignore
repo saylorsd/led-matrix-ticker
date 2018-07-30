@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-.idea
-env
-=======
 # IntelliJ project files
 .idea
 *.iml
@@ -11,6 +7,5 @@ gen
 env
 
 settings.py
-__pycache__/
-*.log
->>>>>>> 1ae03e1d9b1de60e5d13bc37cf2b0302cd2ce390
+__pycache__
+*.pyc

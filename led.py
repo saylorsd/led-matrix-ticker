@@ -68,6 +68,7 @@ class LEDMatrixTicker(object):
         # Open SPI bus#0 using CS0 (CE0)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
+        self.spi.max_speed_hz = 10000000
         self.send_all_reg_byte(MAX7219_REG_SCANLIMIT, 7)  # show all 8 digits
         self.send_all_reg_byte(MAX7219_REG_DECODEMODE, 0)  # using a LED matrix (not digits)
         self.send_all_reg_byte(MAX7219_REG_DISPLAYTEST, 0)  # no display test
